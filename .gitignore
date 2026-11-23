@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Runtime data
+all_photos/
+CHECKED/
+NOT_FOUND/
+seen_offers.txt
