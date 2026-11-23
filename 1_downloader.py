@@ -4,6 +4,7 @@ import re
 import requests
 from playwright.async_api import async_playwright
 
+USER_AGENT = os.getenv("USER_AGENT")
 SAVE_DIR = "all_photos"
 SEEN_FILE = "seen_offers.txt"
 os.makedirs(SAVE_DIR, exist_ok=True)
@@ -72,7 +73,6 @@ async def process_offer_page(page, offer_url):
     offer_id = extract_offer_id(offer_url)
     offer_dir = os.path.join(SAVE_DIR, offer_id)
     
-    # ВАЖНО: Если папка уже существует, значит анализатор её уже забрал или она в процессе
     if os.path.exists(offer_dir):
         return
         
@@ -93,7 +93,6 @@ async def process_offer_page(page, offer_url):
         filepath = os.path.join(offer_dir, f"{offer_id}_{idx:02d}{ext}")
         download_image(url, filepath)
         
-    # Создаем файл-маркер, что скачивание завершено
     with open(os.path.join(offer_dir, ".download_complete"), "w") as f:
         f.write("done")
 
@@ -101,7 +100,7 @@ async def main():
     REGION_IDS = [1, 2, 474, 460]
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False)
-        context = await browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+        context = await browser.new_context(user_agent=USER_AGENT)
         page = await context.new_page()
 
         for region_id in REGION_IDS:
